@@ -30,7 +30,7 @@ class SegViewer():
 
         # add frames for scrollbar and images
         self.frame_img = tk.Frame(self.master, width=1566, height=815, bg='blue')
-        self.frame_box = tk.Frame(self.master, width=215, height=815, bg='green')
+        self.frame_box = tk.Frame(self.master, width=215, height=815)
 
         # add scrollable Listbox for marked images
         self.scrollbar = tk.Scrollbar(self.frame_box, orient='vertical')
