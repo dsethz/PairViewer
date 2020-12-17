@@ -35,7 +35,7 @@ class SegViewer():
         # add scrollable Listbox for marked images
         self.scrollbar = tk.Scrollbar(self.frame_box, orient='vertical')
 
-        self.listbox = tk.Listbox(self.frame_box, width=20, height=30, yscrollcommand=self.scrollbar)
+        self.listbox = tk.Listbox(self.frame_box, width=20, height=30, yscrollcommand=self.scrollbar.set)
         self.listbox.grid(row=0, column=0, columnspan=2, padx=5, pady=5)
         
         self.scrollbar.config(command=self.listbox.yview)
@@ -53,17 +53,32 @@ class SegViewer():
 
         # button to load a slection .csv file
         self.load_btn = tk.Button(self.frame_box, text='Load list', command=self.load_list)
-        self.load_btn.grid(row=1, column=1, padx=5, pady=5)
+        self.load_btn.grid(row=2, column=1, padx=5, pady=5)
 
         # button to save a selection .csv
         self.save_btn = tk.Button(self.frame_box, text='Save list', command=self.save_list)
-        self.save_btn.grid(row=1, column=0, padx=5, pady=5)
- 
+        self.save_btn.grid(row=2, column=0, padx=5, pady=5)
+
+        # button to go to position
+        self.pos_btn = tk.Button(self.frame_box, text='Go to position', command=self.go_position)
+        self.pos_btn.grid(row=1, column=0, columnspan=2, padx=5, pady=5)
+
         # key bindings
         self.master.bind('<Left>', self.key_left)
         self.master.bind('<Right>', self.key_right)
         self.master.bind('<Up>', self.key_up)
         self.master.bind('<Down>', self.key_down)
+
+
+    def go_position(self):
+        '''
+            Change displayed image to selected position.
+        '''
+        new_pos = self.listbox.get('active')
+
+        if new_pos != self.current_pos:
+            self.current_pos = new_pos
+            self.load_images_()
 
 
     def load_list(self):
