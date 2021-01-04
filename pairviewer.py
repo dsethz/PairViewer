@@ -104,8 +104,11 @@ class SegViewer():
         '''
         df = pd.DataFrame(self.del_list)
         df = df.sort_values(by=0)
-        path = filedialog.asksaveasfilename(title='Save file', defaultextension='.csv')
-        df.to_csv(path, index=False, header=False)
+        path = filedialog.asksaveasfilename(title='Save file', defaultextension='.csv',
+                                            filetypes=[('CSV files', '*.csv')])
+
+        if path:
+            df.to_csv(path, index=False, header=False)
 
 
     def load_images_(self):

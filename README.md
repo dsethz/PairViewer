@@ -11,7 +11,9 @@ No installation required. Just clone github repository.
 python ./pairviewer.py
 ```
 
-2. Select `.csv` file containing paths to pairs of images. Example:
+![Alt text](./images/1.png "Start-up screen")
+
+2. Use the `Select file` button to open a `.csv` file containing paths to pairs of images. Example:
 
 |                        |                        |
 |----------------------- | -----------------------|
@@ -20,3 +22,7 @@ python ./pairviewer.py
 |`/path/to/image/3a.png` | `/path/to/image/3b.png`|
 |`...`                   | `...`                  |
 
+Note: For Schroeder Lab movies use 8bit movies with well-set black-point and white-point for good contrast
+images.
+
+3. 
