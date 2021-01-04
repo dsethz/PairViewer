@@ -25,4 +25,6 @@ python ./pairviewer.py
 Note: For Schroeder Lab movies use 8bit movies with well-set black-point and white-point for good contrast
 images.
 
-3. 
+![Alt text](./images/2.png "Start-up screen")
+
+3. Navigate through image pairs using left (&#8592;) and right (&#8594;) arrow on your keyboard
