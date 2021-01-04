@@ -69,11 +69,3 @@ Note: Loading a list of marked images requires loaded image pairs (see 2.).
 
 ## ToDo
 - [x] everything perfect
-
-### Movie curation
-
-| bs-dsvr80 | bs_dsvr65 | segmentation  | Curated | Curated by  | Comment |
-|-----------|-----------|---------------|---------|-------------|---------|
-|181030AW12_16bit|:heavy_check_mark:|201108 fastER|:heavy_check_mark:|DS|differential opacity visible|
-|181031AW12_16bit|:heavy_check_mark:|201108 fastER|:x:|:x:|differential opacity visible|
-
