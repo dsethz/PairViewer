@@ -67,7 +67,5 @@ Note: Loading a list of marked images requires loaded image pairs (see 2.).
 
 ![Alt text](./images/7.png "Go to position")
 
-\
-\
 ## ToDo
 - [x] everything perfect
