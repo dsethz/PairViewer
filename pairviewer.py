@@ -17,19 +17,23 @@ from PIL import ImageTk
 from tkinter import filedialog
 
 
-class SegViewer():
+class PairViewer():
     def __init__(self, master):
         self.master = master
-        self.master.title('SegViewer')
+        self.master.title('PairViewer')
 
         self.panelA = None
         self.panelB = None
         self.files = None
         self.del_list = []
         self.current_pos = 0
+        self.bin_left = tk.IntVar()
+        self.bin_right = tk.IntVar()
+        self.contrast_left = tk.IntVar()
+        self.contrast_right = tk.IntVar()
 
         # add frames for scrollbar and images
-        self.frame_img = tk.Frame(self.master, width=1566, height=815, bg='blue')
+        self.frame_img = tk.Frame(self.master, width=1566, height=835, bg='blue')
         self.frame_box = tk.Frame(self.master, width=215, height=815)
 
         # add scrollable Listbox for marked images
@@ -49,7 +53,7 @@ class SegViewer():
 
         # button to load a file of image paths for displaying
         self.file_btn = tk.Button(self.frame_img, text='Select file', command=self.select_file)
-        self.file_btn.grid(row=1, column=0, columnspan=2, padx=5)
+        self.file_btn.grid(row=2, column=1, columnspan=2, padx=5)
 
         # button to load a slection .csv file
         self.load_btn = tk.Button(self.frame_box, text='Load list', command=self.load_list)
@@ -62,6 +66,26 @@ class SegViewer():
         # button to go to position
         self.pos_btn = tk.Button(self.frame_box, text='Go to position', command=self.go_position)
         self.pos_btn.grid(row=1, column=0, columnspan=2, padx=5, pady=5)
+
+        # checkbox to binarize left
+        self.bin_checkbox_left = tk.Checkbutton(self.frame_img, text='Binarize', variable=self.bin_left,
+                                                command=self.load_images_)
+        self.bin_checkbox_left.grid(row=1, column=0, padx=5)
+
+        # checkbox to binarize right
+        self.bin_checkbox_right = tk.Checkbutton(self.frame_img, text='Binarize', variable=self.bin_right,
+                                                command=self.load_images_)
+        self.bin_checkbox_right.grid(row=1, column=2, padx=5)
+
+        # checkbox to enhance contrast left
+        self.con_checkbox_left = tk.Checkbutton(self.frame_img, text='Enhance contrast', variable=self.contrast_left,
+                                                command=self.load_images_)
+        self.con_checkbox_left.grid(row=1, column=1, padx=5)
+
+        # checkbox to enhance contrast right
+        self.con_checkbox_right = tk.Checkbutton(self.frame_img, text='Enhance contrast', variable=self.contrast_right,
+                                                 command=self.load_images_)
+        self.con_checkbox_right.grid(row=1, column=3, padx=5)
 
         # key bindings
         self.master.bind('<Left>', self.key_left)
@@ -121,66 +145,86 @@ class SegViewer():
         else:
             self.frame_img.config(bg='blue')
 
-        # load image as grayscale
-        image = cv2.imread(self.files.iloc[self.current_pos, 0], -1)
-        mask = cv2.imread(self.files.iloc[self.current_pos, 1], -1)
+        # load images as grayscale
+        left = cv2.imread(self.files.iloc[self.current_pos, 0], -1)
+        right = cv2.imread(self.files.iloc[self.current_pos, 1], -1)
+
+        # if RGB, convert to grayscale
+        left = cv2.cvtColor(left, cv2.COLOR_BGR2GRAY)
+        right = cv2.cvtColor(right, cv2.COLOR_BGR2GRAY)
  
-        # check if image 8bit or 16bit
-        if image.dtype == np.uint8:
-            image_type = '8bit'
-        elif image.dtype == np.uint16:
-            image_type = '16bit'
+        # check if left 8bit or 16bit
+        if left.dtype == np.uint8:
+            left_type = '8bit'
+        elif left.dtype == np.uint16:
+            left_type = '16bit'
         else:
-            raise TypeError(f'Image is expected to be either np.uint8 or np.uint8, but is {image.dtype}.')
+            raise TypeError(f'Left image is expected to be either np.uint8 or np.uint8, but is {left.dtype}.')
 
-        if mask.dtype == np.uint8:
-            mask_type = '8bit'
-        elif mask.dtype == np.uint16:
-            mask_type = '16bit'
+        if right.dtype == np.uint8:
+            right_type = '8bit'
+        elif right.dtype == np.uint16:
+            right_type = '16bit'
         else:
-            raise TypeError(f'Mask is expected to be either np.uint8 or np.uint8, but is {mask.dtype}.')
+            raise TypeError(f'Right image is expected to be either np.uint8 or np.uint8, but is {right.dtype}.')
 
-        # rescale image if necessary
-        image = cv2.resize(image, (768, 768))
-        mask = cv2.resize(mask, (768, 768))
+        # rescale images if necessary
+        left = cv2.resize(left, (768, 768))
+        right = cv2.resize(right, (768, 768))
 
-        # ensure that mask is binary
-        if mask_type == '8bit':
-            mask[mask > 0] = 255
-        else:
-            mask[mask > 0] = 65535
+        # check if left frame must be binarized
+        if self.bin_left.get() == 1:
+            if left_type == '8bit':
+                left[left > 0] = 255
+            else:
+                left[left > 0] = 65535
+
+        # check if right frame must be binarized
+        if self.bin_right.get() == 1:
+            if right_type == '8bit':
+                right[right > 0] = 255
+            else:
+                right[right > 0] = 65535
 
         # convert 16bit images to 8bit
-        if image_type == '16bit':
-            image = (image / 256).astype(np.uint8)
+        if left_type == '16bit':
+            left = (left / 256).astype(np.uint8)
 
-        if mask_type == '16bit':
-            mask = (mask / 256).astype(np.uint8)
+        if right_type == '16bit':
+            right = (right / 256).astype(np.uint8)
+
+        # check if left frame must be contrast enhanced
+        if self.contrast_left.get() == 1:
+            left = cv2.equalizeHist(left)
+
+        # check if right frame must be contrast enhanced
+        if self.contrast_right.get() == 1:
+            right = cv2.equalizeHist(right)
 
         # convert images to PIL format
-        image = Image.fromarray(image)
-        mask = Image.fromarray(mask)
+        left = Image.fromarray(left)
+        right = Image.fromarray(right)
 
         # convert to ImageTK format
-        image = ImageTk.PhotoImage(image)
-        mask = ImageTk.PhotoImage(mask)
+        left = ImageTk.PhotoImage(left)
+        right = ImageTk.PhotoImage(right)
 
         # if panels are None initialize them
         if self.panelA is None or self.panelB is None:
-            self.panelA = tk.Label(self.frame_img, image=image)
-            self.panelA.image = image
-            self.panelA.grid(row=0, column=0, padx=5, pady=5)
+            self.panelA = tk.Label(self.frame_img, image=left)
+            self.panelA.image = left
+            self.panelA.grid(row=0, column=0, columnspan=2, padx=5, pady=5)
 
-            self.panelB = tk.Label(self.frame_img, image=mask)
-            self.panelB.image = mask
-            self.panelB.grid(row=0, column=1, padx=5, pady=5)
+            self.panelB = tk.Label(self.frame_img, image=right)
+            self.panelB.image = right
+            self.panelB.grid(row=0, column=2, columnspan=2, padx=5, pady=5)
 
         else:
             # update the panels
-            self.panelA.configure(image=image)
-            self.panelB.configure(image=mask)
-            self.panelA.image = image
-            self.panelB.image = mask
+            self.panelA.configure(image=left)
+            self.panelB.configure(image=right)
+            self.panelA.image = left
+            self.panelB.image = right
 
 
     def select_file(self):
@@ -260,7 +304,7 @@ class SegViewer():
 def main():
     root = tk.Tk()
     root.geometry('2000x800')
-    segviewer = SegViewer(root)
+    pairviewer = PairViewer(root)
     root.mainloop()
  
 
