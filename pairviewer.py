@@ -150,8 +150,10 @@ class PairViewer():
         right = cv2.imread(self.files.iloc[self.current_pos, 1], -1)
 
         # if RGB, convert to grayscale
-        left = cv2.cvtColor(left, cv2.COLOR_BGR2GRAY)
-        right = cv2.cvtColor(right, cv2.COLOR_BGR2GRAY)
+        if len(left.shape) == 3:
+            left = cv2.cvtColor(left, cv2.COLOR_BGR2GRAY)
+        if len(right.shape) == 3:
+            right = cv2.cvtColor(right, cv2.COLOR_BGR2GRAY)
  
         # check if left 8bit or 16bit
         if left.dtype == np.uint8:
