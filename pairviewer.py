@@ -190,9 +190,15 @@ class PairViewer():
 
         # convert 16bit images to 8bit
         if left_type == '16bit':
+            if len(np.unique(left)) < 5000:         # crude way to distinguish between normal img and inst. segmentation
+                left = 65535 * ((left - np.min(left)) / (np.max(left) - np.min(left)))
+
             left = (left / 256).astype(np.uint8)
 
         if right_type == '16bit':
+            if len(np.unique(right)) < 5000:         # crude way to distinguish between normal img and inst. segmentation
+                right = 65535 * ((right - np.min(right)) / (np.max(right) - np.min(right)))
+
             right = (right / 256).astype(np.uint8)
 
         # check if left frame must be contrast enhanced
