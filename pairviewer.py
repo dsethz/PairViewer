@@ -174,6 +174,19 @@ class PairViewer():
         left = cv2.resize(left, (768, 768))
         right = cv2.resize(right, (768, 768))
 
+        # convert 16bit images to 8bit
+        if left_type == '16bit':
+            if len(np.unique(left)) < 5000:         # crude way to distinguish between normal img and inst. segmentation
+                left = 65535 * ((left - np.min(left)) / (np.max(left) - np.min(left)))
+
+            left = (left / 256).astype(np.uint8)
+
+        if right_type == '16bit':
+            if len(np.unique(right)) < 5000:         # crude way to distinguish between normal img and inst. segmentation
+                right = 65535 * ((right - np.min(right)) / (np.max(right) - np.min(right)))
+
+            right = (right / 256).astype(np.uint8)
+
         # check if left frame must be binarized
         if self.bin_left.get() == 1:
             if left_type == '8bit':
@@ -187,19 +200,6 @@ class PairViewer():
                 right[right > 0] = 255
             else:
                 right[right > 0] = 65535
-
-        # convert 16bit images to 8bit
-        if left_type == '16bit':
-            if len(np.unique(left)) < 5000:         # crude way to distinguish between normal img and inst. segmentation
-                left = 65535 * ((left - np.min(left)) / (np.max(left) - np.min(left)))
-
-            left = (left / 256).astype(np.uint8)
-
-        if right_type == '16bit':
-            if len(np.unique(right)) < 5000:         # crude way to distinguish between normal img and inst. segmentation
-                right = 65535 * ((right - np.min(right)) / (np.max(right) - np.min(right)))
-
-            right = (right / 256).astype(np.uint8)
 
         # check if left frame must be contrast enhanced
         if self.contrast_left.get() == 1:
