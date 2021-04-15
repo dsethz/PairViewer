@@ -31,19 +31,14 @@ def arg_parse():
     desc = "Program to train a segmentation model."
     parser = argparse.ArgumentParser(description=desc)
 
-    parser.add_argument('--movie',
-                        type=str,
-                        default='T:/TimelapseData/201124SK30/',
-                        help='Path to movie directory.')
-
     parser.add_argument('--left',
                         type=str,
-                        default='w00.png',
-                        help='Identifier of .png files used for the left frame.')
+                        default='T:/TimelapseData/180619AW12/*/*w00.png',
+                        help='Path to images for left frame.')
 
     parser.add_argument('--right',
                         type=str,
-                        default='w02.png',
+                        default='T:/TimelapseData/180619AW12/Analysis/Segmentation_201106/*/*.png',
                         help='Identifier of .png files used for the right frame.')
 
     parser.add_argument('--out',
@@ -57,7 +52,6 @@ def arg_parse():
 def main():
     args = arg_parse()
 
-    movie_path = args.movie
     left = args.left
     right = args.right
     out_path = args.out
@@ -65,9 +59,9 @@ def main():
     pattern = re.compile(r'[0-9]{6}[A-Z]{2}[0-9]{2}')
     movie = pattern.search(movie_path)[0]
 
-    files_l = glob.glob(movie_path + '*/*' + left)
+    files_l = glob.glob(left)
     files_l.sort()
-    files_r = glob.glob(movie_path + '*/*' + right)
+    files_r = glob.glob(right)
     files_r.sort()
 
     df = pd.DataFrame({'left': files_l, 'right': files_r})
