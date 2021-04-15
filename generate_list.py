@@ -57,7 +57,7 @@ def main():
     out_path = args.out
 
     pattern = re.compile(r'[0-9]{6}[A-Z]{2}[0-9]{2}')
-    movie = pattern.search(movie_path)[0]
+    movie = pattern.search(left)[0]
 
     files_l = glob.glob(left)
     files_l.sort()
