@@ -5,7 +5,6 @@
 # Python Version:       3.8.6                                                                                         # 
 # PyTorch Version:      1.7.0                                                                                         #
 #######################################################################################################################
-import re
 import glob
 import argparse
 
@@ -41,6 +40,11 @@ def arg_parse():
                         default='T:/TimelapseData/180619AW12/Analysis/Segmentation_201106/*/*.png',
                         help='Identifier of .png files used for the right frame.')
 
+    parser.add_argument('--prefix',
+                        type=str,
+                        default='201201SK30',
+                        help='Prefix for output file name.')
+
     parser.add_argument('--out',
                         type=str,
                         default='C:/Users/schidani/Desktop/',
@@ -54,10 +58,8 @@ def main():
 
     left = args.left
     right = args.right
+    prefix = args.prefix
     out_path = args.out
-
-    pattern = re.compile(r'[0-9]{6}[A-Z]{2}[0-9]{2}')
-    movie = pattern.search(left)[0]
 
     files_l = glob.glob(left)
     files_l.sort()
@@ -65,7 +67,7 @@ def main():
     files_r.sort()
 
     df = pd.DataFrame({'left': files_l, 'right': files_r})
-    df.to_csv(out_path + movie + '_paths.csv', header=None, index=None)
+    df.to_csv(out_path + prefix + '_paths.csv', header=None, index=None)
 
 
 if __name__ == '__main__':
