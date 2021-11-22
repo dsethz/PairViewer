@@ -22,6 +22,7 @@ class PairViewer():
         self.master = master
         self.master.title('PairViewer')
 
+        self.contrast_clahe = cv2.createCLAHE(clipLimit=2)
         self.panelA = None
         self.panelB = None
         self.files = None
@@ -203,11 +204,11 @@ class PairViewer():
 
         # check if left frame must be contrast enhanced
         if self.contrast_left.get() == 1:
-            left = cv2.equalizeHist(left)
+            left = self.contrast_clahe.apply(left)
 
         # check if right frame must be contrast enhanced
         if self.contrast_right.get() == 1:
-            right = cv2.equalizeHist(right)
+            right = self.contrast_clahe.apply(right)
 
         # convert images to PIL format
         left = Image.fromarray(left)
