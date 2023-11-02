@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/321654958.svg)](https://zenodo.org/doi/10.5281/zenodo.10067229)
+
 # SegViewer
 A python-based GUI that visualises image and matching segmentation mask side-by-side
 
